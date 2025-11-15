@@ -28,20 +28,10 @@ function renderVideoPlayer($videoData) {
     
     return <<<HTML
     <div class="video-container">
-        <video class="video-player" preload="metadata" controls>
+        <video class="video-player" preload="metadata" controls poster="{$thumbnailPathEscaped}">
             <source src="{$videoPathEscaped}" type="{$mimeType}">
             Your browser does not support the video tag.
         </video>
-        <img src="{$thumbnailPathEscaped}" alt="{$titleEscaped}" class="video-thumbnail">
-        <div class="video-controls">
-            <button class="play-button">
-                <i class="fas fa-play"></i>
-            </button>
-            <div class="video-progress">
-                <div class="video-progress-bar"></div>
-            </div>
-            <div class="video-time">0:00 / {$duration}</div>
-        </div>
     </div>
 HTML;
 }
