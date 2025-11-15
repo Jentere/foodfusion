@@ -1,0 +1,902 @@
+/* ========================================
+   EDUCATIONAL PAGE - MODERN DESIGN
+   ======================================== */
+
+/* Reset & Base Styles */
+.educational-main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.educational-hero {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    overflow: hidden;
+}
+
+.educational-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../images/hero-bg.jpg') center/cover no-repeat;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 2rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: rgba(231, 111, 81, 0.2);
+    border: 2px solid #e76f51;
+    border-radius: 50px;
+    color: #e76f51;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+.educational-hero h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1px;
+}
+
+.educational-hero p {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* ========================================
+   QUICK STATS
+   ======================================== */
+.quick-stats {
+    padding: 4rem 0;
+    background: white;
+    margin-top: -3rem;
+    position: relative;
+    z-index: 4;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.stat-box {
+    text-align: center;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+}
+
+.stat-box i {
+    font-size: 3rem;
+    color: #e76f51;
+    margin-bottom: 1rem;
+}
+
+.stat-box h3 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.stat-box p {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   SECTION STYLES
+   ======================================== */
+.resource-section {
+    padding: 6rem 0;
+}
+
+.cookbooks-section {
+    background: #f8f9fa;
+}
+
+.videos-section {
+    background: white;
+}
+
+.infographics-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.tips-section {
+    background: white;
+}
+
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 4rem;
+}
+
+.section-label {
+    display: inline-block;
+    color: #e76f51;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ========================================
+   RESOURCE CARDS (Cookbooks)
+   ======================================== */
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+.resource-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.resource-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e76f51, #f4a261);
+}
+
+.resource-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.resource-card:hover .resource-image img {
+    transform: scale(1.1);
+}
+
+.resource-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.resource-content {
+    padding: 2rem;
+}
+
+.resource-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.resource-content p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #e76f51, #f4a261);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(231, 111, 81, 0.3);
+}
+
+/* ========================================
+   VIDEO CARDS
+   ======================================== */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+.video-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.video-thumbnail {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: #000;
+    cursor: pointer;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: rgba(231, 111, 81, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.video-card:hover .play-overlay {
+    background: #e76f51;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.video-content {
+    padding: 1.5rem;
+}
+
+.video-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.8rem;
+}
+
+.video-content p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 1.2rem;
+}
+
+.video-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.play-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #e76f51, #f4a261);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(231, 111, 81, 0.3);
+}
+
+.download-btn-small {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    color: #e76f51;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.download-btn-small:hover {
+    background: #e76f51;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   VIDEO MODAL
+   ======================================== */
+.video-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.video-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    background: #000;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.4s ease-out;
+}
+
+.video-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 45px;
+    height: 45px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    z-index: 10001;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.video-modal-close:hover {
+    background: #e76f51;
+    border-color: #e76f51;
+    transform: rotate(90deg) scale(1.1);
+}
+
+#modalVideo {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 80vh;
+}
+
+/* ========================================
+   INFOGRAPHIC CARDS
+   ======================================== */
+.infographic-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.infographic-card {
+    position: relative;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.infographic-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.infographic-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.infographic-card:hover img {
+    transform: scale(1.1);
+}
+
+.infographic-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+    padding: 2rem 1.5rem 1.5rem;
+    color: white;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.infographic-card:hover .infographic-overlay {
+    background: linear-gradient(to top, rgba(231, 111, 81, 0.95) 0%, rgba(231, 111, 81, 0.7) 100%);
+}
+
+.infographic-overlay h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.infographic-overlay p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ========================================
+   TIPS CARDS
+   ======================================== */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+.tip-card {
+    background: linear-gradient(135deg, #fff5f2 0%, #ffe8e0 100%);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.tip-card:hover {
+    background: white;
+    border-color: #e76f51;
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(231, 111, 81, 0.15);
+}
+
+.tip-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #e76f51, #f4a261);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover .tip-icon {
+    transform: rotateY(360deg);
+}
+
+.tip-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.tip-card p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ========================================
+   CTA SECTION
+   ======================================== */
+.cta-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #e76f51 0%, #f4a261 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.cta-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background: white;
+    color: #e76f51;
+}
+
+.btn-primary:hover {
+    background: transparent;
+    color: white;
+    border-color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border-color: white;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: #e76f51;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .educational-hero h1 {
+        font-size: 3rem;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .resource-grid,
+    .video-grid,
+    .tips-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .infographic-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    .educational-hero {
+        height: 60vh;
+        min-height: 400px;
+    }
+
+    .educational-hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .educational-hero p {
+        font-size: 1.1rem;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .resource-section {
+        padding: 4rem 0;
+    }
+
+    .section-header h2 {
+        font-size: 2.2rem;
+    }
+
+    .resource-grid,
+    .video-grid,
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .infographic-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .educational-hero h1 {
+        font-size: 2rem;
+    }
+
+    .educational-hero p {
+        font-size: 1rem;
+    }
+
+    .hero-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 1.2rem;
+    }
+
+    .stat-box i {
+        font-size: 2rem;
+    }
+
+    .stat-box h3 {
+        font-size: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .section-header p {
+        font-size: 1rem;
+    }
+
+    .resource-content,
+    .video-content {
+        padding: 1.5rem;
+    }
+
+    .infographic-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tip-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .tip-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+
+    .cta-content p {
+        font-size: 1rem;
+    }
+
+    .video-modal {
+        padding: 1rem;
+    }
+
+    .video-modal-close {
+        top: 5px;
+        right: 5px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .video-actions {
+        flex-direction: column;
+    }
+
+    .play-btn {
+        width: 100%;
+    }
+
+    .download-btn-small {
+        width: 100%;
+        border-radius: 50px;
+        height: 45px;
+    }
+}

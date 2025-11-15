@@ -1,0 +1,37 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Force HTTPS (optional - uncomment if needed)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Set proper MIME types for video files
+AddType video/mp4 .mp4 .m4v
+AddType video/webm .webm
+AddType video/ogg .ogv .ogg
+AddType video/quicktime .mov
+
+# Set proper MIME types for other media
+AddType audio/mpeg .mp3
+AddType audio/ogg .oga
+AddType image/webp .webp
+
+# Enable compression for text files
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Set cache control for media files
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType video/mp4 "access plus 1 month"
+    ExpiresByType video/webm "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+</IfModule>
+
+# Allow range requests for video streaming
+<IfModule mod_headers.c>
+    Header set Accept-Ranges bytes
+</IfModule>

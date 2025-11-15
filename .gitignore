@@ -1,0 +1,54 @@
+# Configuration files with sensitive data
+includes/config.php
+setup.lock
+
+# User uploaded content
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+*.log
+error_log
+debug.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Node modules (if using npm)
+node_modules/
+
+# Composer vendor (if using composer)
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Database backups
+*.sql
+*.sqlite
+*.db
+
+# Session files
+sessions/*
+!sessions/.gitkeep
