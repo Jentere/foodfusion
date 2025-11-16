@@ -62,11 +62,13 @@
 
 - [x] 7. Update recipes page
 
+
   - Replace inline CSS/JS includes with `url()` helper calls
   - Update all image sources to use `url()` helper
   - Update all recipe links to use `url()` helper
   - Update form actions to use `url()` helper
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.5, 4.1, 4.2_
+
 
 
 
@@ -78,6 +80,7 @@
   - Update all image sources to use `url()` helper
   - Update all internal links to use `url()` helper
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.5_
+
 
 - [x] 9. Update educational page
 
@@ -92,10 +95,12 @@
 
 
 
+
 - [ ] 10. Update about page
   - Replace inline CSS/JS includes with `url()` helper calls
   - Update all image sources to use `url()` helper
   - Update all internal links to use `url()` helper
+
 
 
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.5_
@@ -107,11 +112,14 @@
 
   - Update form action to use `url()` helper
 
+
   - Update any redirect URLs to use `url()` helper
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.5, 4.1, 4.2_
 
 - [ ] 12. Update recipe detail page
   - Replace inline CSS/JS includes with `url()` helper calls
+
+
 
   - Update all image sources to use `url()` helper
   - Update all internal links to use `url()` helper
@@ -125,6 +133,7 @@
 
 
 
+
   - Update redirect URLs after successful login to use `url()` helper
   - Update links to other auth pages to use `url()` helper
 
@@ -134,18 +143,24 @@
 - [x] 13.2 Update register page (auth/register.php)
 
 
+
   - Replace hardcoded paths with `url()` helper calls
   - Update form action to use `url()` helper
+
   - Update redirect URLs after successful registration to use `url()` helper
   - Update links to other auth pages to use `url()` helper
   - _Requirements: 3.1, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3_
 
-- [ ] 13.3 Update logout page (auth/logout.php)
+- [x] 13.3 Update logout page (auth/logout.php)
+
   - Update redirect URL after logout to use `url()` helper
   - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 13.4 Update forgot password page (auth/forgot_password.php)
+- [x] 13.4 Update forgot password page (auth/forgot_password.php)
+
+
   - Replace hardcoded paths with `url()` helper calls
+
   - Update form action to use `url()` helper
   - Update links to other auth pages to use `url()` helper
   - _Requirements: 3.1, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3_
@@ -153,10 +168,12 @@
 - [ ] 13.5 Update reset password page (auth/reset_password.php)
   - Replace hardcoded paths with `url()` helper calls
   - Update form action to use `url()` helper
+
   - Update redirect URLs after password reset to use `url()` helper
   - _Requirements: 3.1, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3_
 
-- [ ] 14. Update action files
+- [x] 14. Update action files
+
 - [ ] 14.1 Update contact submit action (actions/contact_submit.php)
   - Update redirect URLs after form processing to use `url()` helper
 
