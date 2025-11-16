@@ -45,10 +45,9 @@
             <a href="<?php echo url('culinary.php'); ?>" class="nav-link" data-text="Culinary">Culinary</a>
             <a href="<?php echo url('educational.php'); ?>" class="nav-link" data-text="Education">Education</a>
             <a href="<?php echo url('contact.php'); ?>" class="nav-link" data-text="Contact">Contact</a>
-        </div>
-
-        <!-- Authentication Section -->
-        <div class="nav-auth" id="navAuth">
+            
+            <!-- Authentication Section (Mobile) -->
+            <div class="nav-auth-mobile" id="navAuthMobile">
             <?php
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -90,6 +89,69 @@
                           </div>';
                 } catch (Exception $e) {
                     // If database connection fails, show login buttons
+                    echo '<div class="auth-buttons">
+                            <a href="' . url('auth/login.php') . '" class="auth-btn login-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </a>
+                            <a href="' . url('auth/register.php') . '" class="auth-btn signup-btn">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Sign Up</span>
+                            </a>
+                          </div>';
+                }
+            } else {
+                echo '<div class="auth-buttons">
+                        <a href="' . url('auth/login.php') . '" class="auth-btn login-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                        <a href="' . url('auth/register.php') . '" class="auth-btn signup-btn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Sign Up</span>
+                        </a>
+                      </div>';
+            }
+            ?>
+            </div>
+        </div>
+
+        <!-- Authentication Section (Desktop) -->
+        <div class="nav-auth" id="navAuth">
+            <?php
+            if (isset($_SESSION['user_id']) && $setup_completed && $config_exists) {
+                try {
+                    // Reuse the same database connection if available
+                    if (!isset($conn)) {
+                        include('db.php');
+                    }
+                    $uid = $_SESSION['user_id'];
+                    $stmt = $conn->prepare("SELECT first_name FROM users WHERE user_id = ?");
+                    $stmt->bind_param("i", $uid);
+                    $stmt->execute();
+                    $stmt->bind_result($firstName);
+                    $found = $stmt->fetch();
+                    $stmt->close();
+                    
+                    if (!$found) {
+                        session_unset();
+                        session_destroy();
+                        redirect('index.php');
+                    }
+
+                    echo '<div class="user-section">
+                            <div class="user-profile">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <span class="user-name">Hi, ' . htmlspecialchars($firstName) . '</span>
+                            </div>
+                            <a href="' . url('logout.php') . '" class="auth-btn logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                          </div>';
+                } catch (Exception $e) {
                     echo '<div class="auth-buttons">
                             <a href="' . url('auth/login.php') . '" class="auth-btn login-btn">
                                 <i class="fas fa-sign-in-alt"></i>
