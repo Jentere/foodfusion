@@ -181,7 +181,7 @@ include('includes/header.php');
                 <!-- Team Member 1 -->
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="<?php echo url('assets/images/team/alinafe.jpg'); ?>" alt="Alinafe Chinyama">
+                        <img src="<?php echo url('assets/images/Team/alinafe.jpg'); ?>" alt="Alinafe Chinyama">
                         <div class="team-overlay">
                             <div class="team-social">
                                 <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
@@ -208,7 +208,7 @@ include('includes/header.php');
                 <!-- Team Member 2 -->
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="<?php echo url('assets/images/team/horace.jpg'); ?>" alt="Horace Chipembere">
+                        <img src="<?php echo url('assets/images/Team/horace.jpg'); ?>" alt="Horace Chipembere">
                         <div class="team-overlay">
                             <div class="team-social">
                                 <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
@@ -235,7 +235,7 @@ include('includes/header.php');
                 <!-- Team Member 3 -->
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="<?php echo url('assets/images/team/felistus.jpg'); ?>" alt="Dr Felistus Phiri">
+                        <img src="<?php echo url('assets/images/Team/felistus.jpg'); ?>" alt="Dr Felistus Phiri">
                         <div class="team-overlay">
                             <div class="team-social">
                                 <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
@@ -332,10 +332,10 @@ include('includes/header.php');
                 <h2>Ready to Start Your Culinary Journey?</h2>
                 <p>Join thousands of food enthusiasts in our vibrant community</p>
                 <div class="cta-buttons">
-                    <a href="auth/register.php" class="btn btn-primary">
+              <!--      <a href="auth/register.php" class="btn btn-primary">
                         <i class="fas fa-user-plus"></i>
                         Join FoodFusion
-                    </a>
+                    </a> -->
                     <a href="recipes.php" class="btn btn-secondary">
                         <i class="fas fa-book-open"></i>
                         Explore Recipes

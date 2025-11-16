@@ -23,9 +23,17 @@ try {
     error_log("Views update failed: " . $e->getMessage());
 }
 
-// Get recipe details
-$stmt = $conn->prepare("SELECT * FROM recipes WHERE recipe_id = ?");
-$stmt->bind_param("i", $recipe_id);
+// Get recipe details with ratings
+$user_id = $_SESSION['user_id'] ?? 0;
+$stmt = $conn->prepare("SELECT r.*, 
+                        COALESCE(AVG(rt.rating), 0) as avg_rating,
+                        COUNT(DISTINCT rt.rating_id) as rating_count,
+                        MAX(CASE WHEN rt.user_id = ? THEN rt.rating END) as user_rating
+                        FROM recipes r
+                        LEFT JOIN recipe_ratings rt ON r.recipe_id = rt.recipe_id
+                        WHERE r.recipe_id = ?
+                        GROUP BY r.recipe_id");
+$stmt->bind_param("ii", $user_id, $recipe_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -167,6 +175,54 @@ if (!empty($recipe['user_id'])) {
                         </div>
                     </div>
                 <?php endif; ?>
+            </div>
+
+            <!-- Rating Section -->
+            <div class="recipe-rating-section">
+                <div class="rating-display">
+                    <div class="rating-summary">
+                        <div class="rating-number"><?php echo round($recipe['avg_rating'], 1); ?></div>
+                        <div class="rating-stars-large">
+                            <?php 
+                            $avg_rating = $recipe['avg_rating'];
+                            $fullStars = floor($avg_rating);
+                            $hasHalfStar = ($avg_rating - $fullStars) >= 0.5;
+                            
+                            for ($i = 1; $i <= 5; $i++):
+                                if ($i <= $fullStars): ?>
+                                    <i class="fas fa-star"></i>
+                                <?php elseif ($i == $fullStars + 1 && $hasHalfStar): ?>
+                                    <i class="fas fa-star-half-alt"></i>
+                                <?php else: ?>
+                                    <i class="far fa-star"></i>
+                                <?php endif;
+                            endfor; ?>
+                        </div>
+                        <div class="rating-count"><?php echo $recipe['rating_count']; ?> <?php echo $recipe['rating_count'] == 1 ? 'rating' : 'ratings'; ?></div>
+                    </div>
+                    
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <div class="rating-input">
+                            <p class="rating-prompt">Rate this recipe:</p>
+                            <div class="star-rating" id="starRating">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <i class="far fa-star rating-star" 
+                                       data-rating="<?php echo $i; ?>"
+                                       onclick="rateRecipe(<?php echo $recipe_id; ?>, <?php echo $i; ?>)"></i>
+                                <?php endfor; ?>
+                            </div>
+                            <?php if (!empty($recipe['user_rating'])): ?>
+                                <p class="user-rating-text">Your rating: <?php echo $recipe['user_rating']; ?> stars</p>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="rating-login-prompt">
+                            <a href="<?php echo url('auth/login.php'); ?>" class="btn-login-rate">
+                                <i class="fas fa-sign-in-alt"></i> Login to rate
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Ingredients Section -->
@@ -327,5 +383,228 @@ if (!empty($recipe['user_id'])) {
         <span>Back to All Recipes</span>
     </a>
 </div>
+
+<script>
+// Rating functionality
+function rateRecipe(recipeId, rating) {
+    const basePath = window.BASE_PATH || '/';
+    
+    fetch(basePath + 'actions/rate_recipe.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `recipe_id=${recipeId}&rating=${rating}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the rating display
+            document.querySelector('.rating-number').textContent = data.avg_rating;
+            document.querySelector('.rating-count').textContent = `${data.rating_count} ${data.rating_count === 1 ? 'rating' : 'ratings'}`;
+            
+            // Update the stars display
+            updateStarsDisplay(data.avg_rating);
+            
+            // Update user rating stars
+            updateUserRatingStars(rating);
+            
+            // Show success message
+            showRatingMessage('success', data.message);
+        } else {
+            showRatingMessage('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showRatingMessage('error', 'An error occurred while submitting your rating');
+    });
+}
+
+// Update the large stars display
+function updateStarsDisplay(avgRating) {
+    const starsContainer = document.querySelector('.rating-stars-large');
+    const fullStars = Math.floor(avgRating);
+    const hasHalfStar = (avgRating - fullStars) >= 0.5;
+    
+    let starsHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+            starsHTML += '<i class="fas fa-star"></i>';
+        } else if (i === fullStars + 1 && hasHalfStar) {
+            starsHTML += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+            starsHTML += '<i class="far fa-star"></i>';
+        }
+    }
+    starsContainer.innerHTML = starsHTML;
+}
+
+// Update user rating stars (interactive stars)
+function updateUserRatingStars(rating) {
+    const stars = document.querySelectorAll('.rating-star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove('far');
+            star.classList.add('fas');
+        } else {
+            star.classList.remove('fas');
+            star.classList.add('far');
+        }
+    });
+    
+    // Update or create user rating text
+    let userRatingText = document.querySelector('.user-rating-text');
+    if (!userRatingText) {
+        userRatingText = document.createElement('p');
+        userRatingText.className = 'user-rating-text';
+        document.querySelector('.rating-input').appendChild(userRatingText);
+    }
+    userRatingText.textContent = `Your rating: ${rating} stars`;
+}
+
+// Show rating message
+function showRatingMessage(type, message) {
+    // Remove existing message if any
+    const existingMsg = document.querySelector('.rating-message');
+    if (existingMsg) {
+        existingMsg.remove();
+    }
+    
+    // Create new message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `rating-message rating-message-${type}`;
+    messageDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    // Insert after rating input
+    const ratingInput = document.querySelector('.rating-input');
+    if (ratingInput) {
+        ratingInput.parentNode.insertBefore(messageDiv, ratingInput.nextSibling);
+    }
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        messageDiv.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => messageDiv.remove(), 300);
+    }, 3000);
+}
+
+// Hover effect for rating stars
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingStars = document.querySelectorAll('.rating-star');
+    
+    ratingStars.forEach((star, index) => {
+        star.addEventListener('mouseenter', function() {
+            highlightStars(index + 1);
+        });
+        
+        star.addEventListener('mouseleave', function() {
+            resetStars();
+        });
+    });
+    
+    function highlightStars(count) {
+        ratingStars.forEach((star, index) => {
+            if (index < count) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+                star.style.color = '#ffc107';
+            } else {
+                star.classList.remove('fas');
+                star.classList.add('far');
+                star.style.color = '';
+            }
+        });
+    }
+    
+    function resetStars() {
+        // Reset to current user rating or empty
+        const userRatingText = document.querySelector('.user-rating-text');
+        if (userRatingText) {
+            const currentRating = parseInt(userRatingText.textContent.match(/\d+/)[0]);
+            updateUserRatingStars(currentRating);
+        } else {
+            ratingStars.forEach(star => {
+                star.classList.remove('fas');
+                star.classList.add('far');
+                star.style.color = '';
+            });
+        }
+    }
+});
+</script>
+
+<style>
+/* Rating message styles */
+.rating-message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.rating-message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.rating-message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.rating-star {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.rating-star:hover {
+    transform: scale(1.2);
+}
+
+.rating-star.fas {
+    color: #ffc107;
+}
+
+.user-rating-text {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+</style>
 
 <?php include('includes/footer.php'); ?>

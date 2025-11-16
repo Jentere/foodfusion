@@ -6,7 +6,9 @@ define('DB_PASS', '');
 define('DB_NAME', 'foodfusion_db');
 
 // Site Configuration
-define('SITE_URL', 'http://localhost/foodfusion');
+// Note: SITE_URL will be auto-detected by includes/paths.php
+// This is just a sample. The actual config.php created by setup will use auto-detection
+define('SITE_URL', 'http://localhost');  // Will be overridden by paths.php
 define('UPLOADS_DIR', __DIR__ . '/../uploads');
 define('RESOURCES_DIR', __DIR__ . '/../resources');
 

@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="back-home">
-                    <a href="../index.php">
+                    <a href="<?php echo url('index.php'); ?>">
                         <i class="fas fa-arrow-left"></i>
                         Back to Home
                     </a>

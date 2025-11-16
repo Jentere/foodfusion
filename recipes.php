@@ -68,8 +68,16 @@ $stmt->execute();
 $totalRecipes = $stmt->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalRecipes / $limit);
 
-// Get recipes
-$query = "SELECT * FROM recipes $whereClause ORDER BY $orderBy LIMIT ? OFFSET ?";
+// Get recipes with ratings
+$query = "SELECT r.*, 
+          COALESCE(AVG(rt.rating), 0) as avg_rating,
+          COUNT(DISTINCT rt.rating_id) as rating_count
+          FROM recipes r
+          LEFT JOIN recipe_ratings rt ON r.recipe_id = rt.recipe_id
+          $whereClause
+          GROUP BY r.recipe_id
+          ORDER BY $orderBy 
+          LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($query);
 $bindTypes = !empty($types) ? $types . "ii" : "ii";
 $bindParams = !empty($params) ? array_merge($params, [$limit, $offset]) : [$limit, $offset];
@@ -293,6 +301,34 @@ $recipes = $stmt->get_result();
                                         <i class="fas fa-eye"></i>
                                         <span><?php echo number_format($recipe['views'] ?? 0); ?> views</span>
                                     </div>
+                                </div>
+
+                                <!-- Rating Display -->
+                                <div class="card-rating">
+                                    <?php 
+                                    $avg_rating = round($recipe['avg_rating'], 1);
+                                    $rating_count = $recipe['rating_count'];
+                                    $fullStars = floor($avg_rating);
+                                    $hasHalfStar = ($avg_rating - $fullStars) >= 0.5;
+                                    ?>
+                                    <div class="rating-stars">
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <?php if ($i <= $fullStars): ?>
+                                                <i class="fas fa-star"></i>
+                                            <?php elseif ($i == $fullStars + 1 && $hasHalfStar): ?>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            <?php else: ?>
+                                                <i class="far fa-star"></i>
+                                            <?php endif; ?>
+                                        <?php endfor; ?>
+                                    </div>
+                                    <span class="rating-text">
+                                        <?php if ($rating_count > 0): ?>
+                                            <?php echo $avg_rating; ?> (<?php echo $rating_count; ?> <?php echo $rating_count == 1 ? 'rating' : 'ratings'; ?>)
+                                        <?php else: ?>
+                                            No ratings yet
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
 
                             </div>

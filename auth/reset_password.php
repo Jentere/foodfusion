@@ -28,7 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmtDelete->bind_param("s", $token);
         $stmtDelete->execute();
 
-        $response = "<div class='success-message'>Password reset successful. You can now <a href='/foodfusion/auth/login.php'>log in</a>.</div>";
+        require_once('../includes/paths.php');
+        $loginUrl = url('auth/login.php');
+        $response = "<div class='success-message'>Password reset successful. You can now <a href='$loginUrl'>log in</a>.</div>";
     } else {
         $response = "<div class='error-message'>Invalid or expired token. Please try again.</div>";
     }
@@ -56,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-    <link rel="stylesheet" href="/foodfusion/assets/css/style.css">
+    <?php require_once('../includes/paths.php'); ?>
+    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>">
 </head>
 <body>
     <div class="reset-password-container">

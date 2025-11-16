@@ -148,18 +148,47 @@ function initJoinModal() {
         const formData = new FormData(joinForm);
 
         try {
-            const response = await fetch('/foodfusion/auth/register.php', {
+            // Use dynamic base path from PHP
+            const basePath = window.BASE_PATH || '/';
+            let registerUrl = basePath + 'auth/register.php';
+            
+            // Ensure proper URL format (remove double slashes)
+            registerUrl = registerUrl.replace(/([^:]\/)\/+/g, "$1");
+            
+            console.log('Attempting registration with URL:', registerUrl);
+            console.log('Base path:', basePath);
+            console.log('Full URL:', window.location.origin + registerUrl);
+            
+            const response = await fetch(registerUrl, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin', // Include cookies for session
+                mode: 'cors', // Enable CORS
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Indicate AJAX request
+                }
             });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+
+            // Check if response is OK
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
 
             // Check if response is JSON
             const contentType = response.headers.get('content-type');
+            console.log('Content-Type:', contentType);
+            
             if (!contentType || !contentType.includes('application/json')) {
+                const responseText = await response.text();
+                console.error('Non-JSON response:', responseText);
                 throw new Error('Server returned non-JSON response. Please check server configuration.');
             }
 
             const data = await response.json();
+            console.log('Response data:', data);
 
             if (data.success) {
                 console.log('Registration successful!', data);
@@ -172,12 +201,14 @@ function initJoinModal() {
                 const redirectTimer = setTimeout(() => {
                     console.log('Attempting redirect to login page...');
                     try {
-                        window.location.replace('/foodfusion/auth/login.php');
+                        const basePath = window.BASE_PATH || '/';
+                        window.location.replace(basePath + 'auth/login.php');
                         console.log('Redirect initiated');
                     } catch (error) {
                         console.error('Redirect failed:', error);
                         // Fallback redirect method
-                        window.location.href = '/foodfusion/auth/login.php';
+                        const basePath = window.BASE_PATH || '/';
+                        window.location.href = basePath + 'auth/login.php';
                     }
                 }, 1500);
                 console.log('Redirect timer set:', redirectTimer);
@@ -200,8 +231,21 @@ function initJoinModal() {
                 submitBtn.innerHTML = originalBtnContent;
             }
         } catch (error) {
-            console.error('Error:', error);
-            showMessage(error.message || 'An error occurred. Please try again.', 'error');
+            console.error('Registration error:', error);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            
+            let errorMessage = 'An error occurred. Please try again.';
+            
+            // Provide more specific error messages
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                errorMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            showMessage(errorMessage, 'error');
 
             // Reset button
             submitBtn.disabled = false;
@@ -369,7 +413,8 @@ function initGoogleSignup() {
 
     googleBtn.addEventListener('click', () => {
         // Redirect to Google OAuth login
-        window.location.href = '/foodfusion/auth/google-login.php';
+        const basePath = window.BASE_PATH || '/';
+        window.location.href = basePath + 'auth/google-login.php';
     });
 }
 

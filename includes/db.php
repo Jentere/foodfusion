@@ -21,18 +21,41 @@ require_once __DIR__ . '/config.php';
 
 // Create database connection
 try {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    // Try connecting with mysqli
+    $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     
     // Check connection
     if ($conn->connect_error) {
-        die("Database connection failed: " . $conn->connect_error);
+        // If localhost fails, try 127.0.0.1 (common fix for shared hosting)
+        if (DB_HOST === 'localhost') {
+            $conn = @new mysqli('127.0.0.1', DB_USER, DB_PASS, DB_NAME);
+            if ($conn->connect_error) {
+                throw new Exception("Could not connect to database. Please check your database credentials in includes/config.php");
+            }
+        } else {
+            throw new Exception("Database connection failed: " . $conn->connect_error);
+        }
     }
     
     // Set charset to utf8mb4 for proper Unicode support
-    $conn->set_charset("utf8mb4");
+    if (!$conn->set_charset("utf8mb4")) {
+        error_log("Failed to set charset: " . $conn->error);
+    }
     
 } catch (Exception $e) {
-    die("Database connection error: " . $e->getMessage());
+    // More helpful error message
+    $error_msg = "Database connection error: " . $e->getMessage();
+    
+    // Add helpful hints for common issues
+    if (strpos($e->getMessage(), 'No such file or directory') !== false) {
+        $error_msg .= "<br><br><strong>Troubleshooting:</strong><br>";
+        $error_msg .= "1. Check your database credentials in includes/config.php<br>";
+        $error_msg .= "2. On shared hosting, you may need to use '127.0.0.1' instead of 'localhost'<br>";
+        $error_msg .= "3. Verify your database exists in your hosting control panel<br>";
+        $error_msg .= "4. Make sure your database user has proper permissions<br>";
+    }
+    
+    die($error_msg);
 }
 
 /**

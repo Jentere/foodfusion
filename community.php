@@ -101,6 +101,12 @@ $result = $stmt->get_result();
 <!-- Community Page Specific CSS -->
 <link rel="stylesheet" href="<?php echo url('assets/css/community.css'); ?>">
 
+<!-- Base Path for JavaScript -->
+<script>
+    window.BASE_PATH = '<?php echo BASE_PATH; ?>';
+    window.SITE_URL = '<?php echo SITE_URL; ?>';
+</script>
+
 <!-- Hero Section -->
 <section class="community-hero">
     <div class="hero-overlay"></div>
@@ -116,6 +122,40 @@ $result = $stmt->get_result();
 
 <!-- Main Content -->
 <main class="community-main">
+    
+    <!-- Success/Error Messages -->
+    <?php if (isset($_SESSION['recipe_success'])): ?>
+        <div class="container" style="margin-top: 2rem;">
+            <div class="alert alert-success" style="display: flex !important;">
+                <i class="fas fa-check-circle"></i>
+                <span><strong>Success!</strong> <?php echo htmlspecialchars($_SESSION['recipe_success']); ?></span>
+                <button class="alert-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <?php unset($_SESSION['recipe_success']); ?>
+    <?php endif; ?>
+    
+    <?php if (isset($_SESSION['recipe_errors'])): ?>
+        <div class="container" style="margin-top: 2rem;">
+            <div class="alert alert-error" style="display: flex !important;">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <strong>Please fix the following errors:</strong>
+                    <ul>
+                        <?php foreach ($_SESSION['recipe_errors'] as $error): ?>
+                            <li><?php echo htmlspecialchars($error); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <button class="alert-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <?php unset($_SESSION['recipe_errors']); ?>
+    <?php endif; ?>
     
     <!-- Search and Filter Section -->
     <section class="filter-section">
@@ -257,7 +297,7 @@ $result = $stmt->get_result();
             <?php if ($result->num_rows > 0): ?>
                 <div class="posts-grid">
                     <?php while($post = $result->fetch_assoc()): ?>
-                        <article class="post-card">
+                        <article class="post-card" data-post-id="<?php echo $post['id']; ?>" style="cursor: pointer;">
                             <?php if (!empty($post['image_path'])): ?>
                                 <div class="post-image">
                                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
@@ -379,6 +419,28 @@ $result = $stmt->get_result();
 </main>
 
 <script>
+// Make post cards clickable
+document.addEventListener('DOMContentLoaded', function() {
+    const postCards = document.querySelectorAll('.post-card');
+    
+    postCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Don't trigger if clicking on action buttons or links
+            if (e.target.closest('.post-actions') || 
+                e.target.closest('.action-btn') || 
+                e.target.tagName === 'A' ||
+                e.target.tagName === 'BUTTON') {
+                return;
+            }
+            
+            const postId = this.getAttribute('data-post-id');
+            if (postId) {
+                viewPost(postId);
+            }
+        });
+    });
+});
+
 // Scroll to form
 function scrollToForm() {
     document.getElementById('shareRecipeForm').scrollIntoView({ behavior: 'smooth' });
@@ -387,7 +449,11 @@ function scrollToForm() {
 
 // Toggle like
 function toggleLike(postId) {
-    fetch('actions/toggle_like.php', {
+    // Prevent event bubbling to card click
+    event.stopPropagation();
+    
+    const basePath = window.BASE_PATH || '/';
+    fetch(`${basePath}actions/toggle_like.php`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -403,21 +469,25 @@ function toggleLike(postId) {
     .catch(error => console.error('Error:', error));
 }
 
-// View post (placeholder)
-function viewPost(postId) {
-    alert('View post functionality - Post ID: ' + postId);
-    // Implement modal or redirect to post detail page
-}
-
-// Share post (placeholder)
+// Share post
 function sharePost(postId) {
+    // Prevent event bubbling to card click
+    event.stopPropagation();
+    
+    const shareUrl = window.location.origin + window.location.pathname + '?post=' + postId;
+    
     if (navigator.share) {
         navigator.share({
             title: 'Check out this recipe!',
-            url: window.location.href + '?post=' + postId
-        });
+            url: shareUrl
+        }).catch(error => console.log('Share cancelled'));
     } else {
-        alert('Share functionality - Post ID: ' + postId);
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert('Link copied to clipboard!');
+        }).catch(() => {
+            alert('Share link: ' + shareUrl);
+        });
     }
 }
 
@@ -475,5 +545,317 @@ document.querySelector('.reset-btn').addEventListener('click', function() {
 
 <?php 
 $stmt->close();
-include('includes/footer.php'); 
 ?>
+
+<!-- Post Detail Modal with Comments -->
+<div id="postModal" class="post-modal">
+    <div class="modal-backdrop" onclick="closePostModal()"></div>
+    <div class="modal-container">
+        <button class="modal-close" onclick="closePostModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-content" id="modalContent">
+            <!-- Content will be loaded dynamically -->
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-dismiss success messages -->
+<script>
+    // Auto-dismiss success alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlerts = document.querySelectorAll('.alert-success');
+        successAlerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.animation = 'slideUp 0.3s ease-out forwards';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        });
+    });
+    
+    // Smooth scroll to form if there are errors
+    <?php if (isset($_SESSION['recipe_errors'])): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('shareRecipeForm').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        });
+    <?php endif; ?>
+    
+    // View post with comments
+    function viewPost(postId) {
+        const modal = document.getElementById('postModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Load post details with dynamic base path
+        const basePath = window.BASE_PATH || '/';
+        fetch(`${basePath}actions/get_post.php?id=${postId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    modalContent.innerHTML = data.html;
+                } else {
+                    console.error('Failed to load post:', data.message);
+                    modalContent.innerHTML = `<p class="error">Failed to load post: ${data.message || 'Unknown error'}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading post:', error);
+                modalContent.innerHTML = '<p class="error">An error occurred while loading the post. Please try again.</p>';
+            });
+    }
+    
+    // Close post modal
+    function closePostModal() {
+        const modal = document.getElementById('postModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Submit comment
+    function submitComment(postId) {
+        const commentText = document.getElementById('commentText').value.trim();
+        
+        if (!commentText) {
+            alert('Please enter a comment');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('post_id', postId);
+        formData.append('comment', commentText);
+        
+        const basePath = window.BASE_PATH || '/';
+        fetch(`${basePath}actions/submit_comment.php`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload post to show new comment
+                viewPost(postId);
+            } else {
+                alert(data.message || 'Failed to submit comment');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting comment:', error);
+            alert('An error occurred while submitting your comment');
+        });
+    }
+    
+    // Share post
+    function sharePost(postId) {
+        const url = window.location.origin + window.location.pathname + '?post=' + postId;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out this recipe!',
+                url: url
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+    }
+</script>
+
+<style>
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+    
+    /* Post Modal Styles */
+    .post-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .modal-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-container {
+        position: relative;
+        background: white;
+        border-radius: 20px;
+        max-width: 800px;
+        max-height: 90vh;
+        width: 100%;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: slideUp 0.3s ease-out reverse;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 50%;
+        color: #333;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        z-index: 10;
+    }
+    
+    .modal-close:hover {
+        background: #e76f51;
+        color: white;
+        transform: rotate(90deg);
+    }
+    
+    .modal-content {
+        padding: 2rem;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+    
+    .loading-spinner {
+        text-align: center;
+        padding: 3rem;
+        color: #e76f51;
+    }
+    
+    .loading-spinner i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Comment Section */
+    .comments-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+    }
+    
+    .comments-section h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+    
+    .comment-form {
+        margin-bottom: 2rem;
+    }
+    
+    .comment-form textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+    }
+    
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #e76f51;
+    }
+    
+    .comment-form button {
+        margin-top: 1rem;
+        background: #e76f51;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .comment-form button:hover {
+        background: #d65d3f;
+        transform: translateY(-2px);
+    }
+    
+    .comment-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    .comment-author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e76f51;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .comment-info {
+        flex: 1;
+    }
+    
+    .comment-name {
+        font-weight: 600;
+        color: #2c3e50;
+        display: block;
+    }
+    
+    .comment-date {
+        font-size: 0.85rem;
+        color: #666;
+    }
+    
+    .comment-text {
+        color: #555;
+        line-height: 1.6;
+    }
+</style>
+
+<?php include('includes/footer.php'); ?>
+

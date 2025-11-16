@@ -201,7 +201,9 @@ class ModernNavigation {
         submitBtn.disabled = true;
         
         try {
-            const response = await fetch('/foodfusion/auth/login.php', {
+            // Use dynamic base path from PHP
+            const basePath = window.BASE_PATH || '/';
+            const response = await fetch(basePath + 'auth/login.php', {
                 method: 'POST',
                 body: formData
             });
@@ -260,7 +262,9 @@ class ModernNavigation {
         submitBtn.disabled = true;
         
         try {
-            const response = await fetch('/foodfusion/auth/register.php', {
+            // Use dynamic base path from PHP
+            const basePath = window.BASE_PATH || '/';
+            const response = await fetch(basePath + 'auth/register.php', {
                 method: 'POST',
                 body: formData
             });
@@ -512,6 +516,19 @@ class NavigationEnhancements {
         window.addEventListener('load', () => {
             loader.classList.remove('active');
         });
+        
+        // Hide loader when navigating back/forward (bfcache)
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                // Page was restored from bfcache
+                loader.classList.remove('active');
+            }
+        });
+        
+        // Also hide on DOMContentLoaded as backup
+        document.addEventListener('DOMContentLoaded', () => {
+            loader.classList.remove('active');
+        });
     }
 }
 
@@ -535,20 +552,23 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.log('Modal not found, redirecting to register page');
                 // Fallback to register page if modal not available
-                window.location.href = '/foodfusion/auth/register.php';
+                const basePath = window.BASE_PATH || '/';
+                window.location.href = basePath + 'auth/register.php';
             }
         });
-    } else {
-        console.log('Join Us button not found on this page');
     }
+    // Note: Join Us button only exists on homepage, so it's normal if not found on other pages
     
     console.log('🚀 Modern Navigation System Loaded Successfully!');
 });
 
 // Service Worker for better performance (optional)
+// Disabled until sw.js is created
+/*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/foodfusion/sw.js')
+        const basePath = window.BASE_PATH || '/';
+        navigator.serviceWorker.register(basePath + 'sw.js')
             .then(registration => {
                 console.log('SW registered: ', registration);
             })
@@ -557,3 +577,4 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+*/

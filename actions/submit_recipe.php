@@ -8,7 +8,7 @@ require_once('../includes/paths.php');
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    redirect('auth/login.php');
+    header('Location: ../auth/login.php');
     exit();
 }
 
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($errors)) {
         $_SESSION['recipe_errors'] = $errors;
         $_SESSION['recipe_form_data'] = $_POST;
-        redirect('community.php#shareRecipeForm');
+        header('Location: ../community.php#shareRecipeForm');
         exit();
     }
     
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $_SESSION['recipe_success'] = 'Your recipe has been shared successfully!';
             $stmt->close();
-            redirect('community.php?success=1');
+            header('Location: ../community.php?success=1');
             exit();
         } else {
             throw new Exception('Failed to submit recipe: ' . $stmt->error);
@@ -109,12 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         error_log('Recipe submission error: ' . $e->getMessage());
         $_SESSION['recipe_errors'] = ['An error occurred while submitting your recipe. Please try again.'];
-        redirect('community.php#shareRecipeForm');
+        header('Location: ../community.php#shareRecipeForm');
         exit();
     }
     
 } else {
-    redirect('community.php');
+    header('Location: ../community.php');
     exit();
 }
 ?>

@@ -237,6 +237,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show modal
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        
+        // Check if content needs scroll indicator
+        setTimeout(() => {
+            const content = modal.querySelector('.recipe-preview-content');
+            const hasScroll = content.scrollHeight > content.clientHeight;
+            if (hasScroll) {
+                content.classList.add('has-scroll');
+            }
+        }, 100);
     }
 
     function createRecipeModal() {
@@ -318,6 +327,30 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.querySelector('.btn-preview-full').addEventListener('click', () => {
             alert('This would navigate to the full recipe page');
         });
+
+        // Add scroll detection for scroll indicator
+        const content = modal.querySelector('.recipe-preview-content');
+        
+        function checkScroll() {
+            const hasScroll = content.scrollHeight > content.clientHeight;
+            const isScrolledToBottom = content.scrollHeight - content.scrollTop <= content.clientHeight + 10;
+            
+            if (hasScroll && !isScrolledToBottom) {
+                content.classList.add('has-scroll');
+            } else {
+                content.classList.remove('has-scroll');
+            }
+        }
+        
+        // Check scroll on content load and scroll events
+        content.addEventListener('scroll', checkScroll);
+        
+        // Use MutationObserver to detect when content is loaded
+        const observer = new MutationObserver(checkScroll);
+        observer.observe(content, { childList: true, subtree: true });
+        
+        // Initial check after a short delay
+        setTimeout(checkScroll, 100);
 
         return modal;
     }

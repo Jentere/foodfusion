@@ -117,7 +117,10 @@ define('DB_PASS', '" . addslashes($password) . "');
 define('DB_NAME', '" . addslashes($database) . "');
 
 // Site Configuration
-define('SITE_URL', '" . addslashes($site_url) . "');
+// Note: SITE_URL is auto-detected by includes/paths.php
+// The site URL is: " . addslashes($site_url) . "
+// If you need to override auto-detection, uncomment the line below:
+// define('SITE_URL', '" . addslashes($site_url) . "');
 define('UPLOADS_DIR', __DIR__ . '/../uploads');
 define('RESOURCES_DIR', __DIR__ . '/../resources');
 
@@ -441,7 +444,7 @@ function populateInitialData($conn) {
             ['Stuffed Bell Peppers', 'Bell peppers stuffed with rice, beans, and cheese.', 'Mexican', 'Vegetarian', 'Medium', 'recipe8.jpg'],
             ['Classic Margherita Pizza', 'Wood-fired pizza with fresh basil, mozzarella, and tomato.', 'Italian', 'Vegetarian', 'Medium', 'recipe9.jpg'],
             ['Pad Thai', 'Popular Thai stir-fried noodles with tamarind sauce and peanuts.', 'Asian', 'Non-Vegetarian', 'Hard', 'tip1.jpg'],
-            ['Avocado Toast Deluxe', 'Avocado on multigrain bread with microgreens and chili flakes.', 'American', 'Vegan', 'Easy', 'recipes6.jpg']
+            ['Avocado Toast Deluxe', 'Avocado on multigrain bread with microgreens and chili flakes.', 'American', 'Vegan', 'Easy', 'recipe8.jpg']
         ];
         
         // Prepare statement with proper error handling
@@ -495,7 +498,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isSetupCompleted()) {
     $username = trim($_POST['db_user'] ?? 'root');
     $password = $_POST['db_pass'] ?? '';
     $database = trim($_POST['db_name'] ?? 'foodfusion_db');
-    $site_url = trim($_POST['site_url'] ?? 'http://localhost/foodfusion');
+    
+    // Auto-detect site URL from current request
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+    $basePath = ($scriptDir === '/' || $scriptDir === '\\') ? '' : $scriptDir;
+    $defaultSiteUrl = $protocol . '://' . $currentHost . $basePath;
+    
+    $site_url = trim($_POST['site_url'] ?? $defaultSiteUrl);
     
     try {
         // Validate inputs

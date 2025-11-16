@@ -15,10 +15,10 @@
 // Google OAuth Configuration
 define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE');
 define('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE');
-define('GOOGLE_REDIRECT_URI', 'http://localhost/foodfusion/auth/google-callback.php');
 
-// For production, use your actual domain:
-// define('GOOGLE_REDIRECT_URI', 'https://yourdomain.com/foodfusion/auth/google-callback.php');
+// Auto-detect redirect URI based on current environment
+require_once(__DIR__ . '/../includes/paths.php');
+define('GOOGLE_REDIRECT_URI', SITE_URL . '/auth/google-callback.php');
 
 // Google OAuth URLs
 define('GOOGLE_AUTH_URL', 'https://accounts.google.com/o/oauth2/v2/auth');

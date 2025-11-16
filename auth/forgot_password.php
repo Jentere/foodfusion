@@ -23,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmtInsert->bind_param("is", $user_id, $token);
         $stmtInsert->execute();
 
-        // Generate the reset link
-        $resetLink = "http://localhost/foodfusion/auth/reset_password.php?token=$token";
+        // Generate the reset link using SITE_URL
+        require_once('../includes/paths.php');
+        $resetLink = SITE_URL . '/auth/reset_password.php?token=' . $token;
         $response = "<div class='success-message'>
                         <p><strong>Success!</strong> A password reset link has been sent to your email:</p>
                         <a href='$resetLink' class='reset-link'>Click here to reset your password</a>
@@ -44,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-    <link rel="stylesheet" href="/foodfusion/assets/css/style.css">
+    <?php require_once('../includes/paths.php'); ?>
+    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>">
 </head>
 <body>
     <div class="forgot-password-container">

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodFusion | Home</title>
-    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>">
-    <link rel="stylesheet" href="<?php echo url('assets/css/navigation.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/navigation.css'); ?>?v=<?php echo time(); ?>">
     <?php
     // Load page-specific CSS
     $current_page = basename($_SERVER['PHP_SELF'], '.php');
@@ -14,8 +14,15 @@
     }
     ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="<?php echo url('assets/js/video-player.js'); ?>" defer></script>
-    <script src="<?php echo url('assets/js/main.js'); ?>" defer></script>
+    
+    <!-- Base Path for JavaScript -->
+    <script>
+        window.BASE_PATH = '<?php echo BASE_PATH; ?>';
+        window.SITE_URL = '<?php echo SITE_URL; ?>';
+    </script>
+    
+    <script src="<?php echo url('assets/js/video-player.js'); ?>?v=<?php echo time(); ?>" defer></script>
+    <script src="<?php echo url('assets/js/main.js'); ?>?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
 
@@ -66,8 +73,7 @@
                     if (!$found) {
                         session_unset();
                         session_destroy();
-                        header('Location: /foodfusion/index.php');
-                        exit();
+                        redirect('index.php');
                     }
 
                     echo '<div class="user-section">

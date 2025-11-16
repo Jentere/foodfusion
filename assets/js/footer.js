@@ -65,7 +65,8 @@ function initNewsletterForm() {
             // For now, just show success message
             // In production, you would send this to your backend
             /*
-            const response = await fetch('/foodfusion/api/newsletter-subscribe.php', {
+            const basePath = window.BASE_PATH || '/';
+            const response = await fetch(basePath + 'api/newsletter-subscribe.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

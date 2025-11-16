@@ -129,6 +129,6 @@
 
 <script src="<?php echo url('assets/js/footer.js'); ?>"></script>
 <script src="<?php echo url('assets/js/script.js'); ?>"></script>
-<script src="<?php echo url('assets/js/main.js'); ?>"></script>
+<!-- main.js is already loaded in header.php -->
 </body>
 </html>

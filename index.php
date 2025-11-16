@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging (disable in production)
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 // Check if setup is required before any output
 if (!file_exists(__DIR__ . '/setup.lock')) {
     header('Location: setup.php');
@@ -19,6 +23,12 @@ include('includes/db.php');
 <!-- Link to Homepage Specific CSS -->
 <link rel="stylesheet" href="<?php echo url('assets/css/homepage.css'); ?>">
 <link rel="stylesheet" href="<?php echo url('assets/css/recipe-preview-popup.css'); ?>">
+
+<!-- Base Path for JavaScript -->
+<script>
+    window.BASE_PATH = '<?php echo BASE_PATH; ?>';
+    window.SITE_URL = '<?php echo SITE_URL; ?>';
+</script>
 
 <!-- Hero/Welcome Section -->
 <section class="hero-section">
@@ -474,7 +484,7 @@ include('includes/db.php');
 </div>
 
 <!-- Homepage Specific JavaScript -->
-<script src="<?php echo url('assets/js/homepage.js'); ?>"></script>
-<script src="<?php echo url('assets/js/recipe-preview.js'); ?>"></script>
+<script src="<?php echo url('assets/js/homepage.js'); ?>?v=<?php echo time(); ?>"></script>
+<script src="<?php echo url('assets/js/recipe-preview.js'); ?>?v=<?php echo time(); ?>"></script>
 
 <?php include('includes/footer.php'); ?>

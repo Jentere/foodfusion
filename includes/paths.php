@@ -24,32 +24,58 @@ function isLocalhost(): bool {
 
 /**
  * Get the base path for the application
+ * Automatically detects the correct base path from the current script location
  * 
  * @return string The base path (e.g., '/foodfusion/' or '/')
  */
 function getBasePath(): string {
-    if (isLocalhost()) {
-        return '/foodfusion/';
+    // Get the directory of the current script
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    
+    // Extract the directory path (remove the filename)
+    $scriptDir = dirname($scriptName);
+    
+    // Normalize the path
+    $basePath = str_replace('\\', '/', $scriptDir);
+    
+    // If we're in a subdirectory like /auth or /includes, go up to root
+    $basePath = preg_replace('#/(auth|includes|assets|database|api).*$#', '', $basePath);
+    
+    // Ensure it ends with a slash
+    if ($basePath !== '/' && !empty($basePath)) {
+        $basePath = rtrim($basePath, '/') . '/';
+    } elseif ($basePath === '') {
+        $basePath = '/';
     }
-    return '/';
+    
+    return $basePath;
 }
 
 /**
  * Get the full site URL including protocol and domain
+ * Automatically detects the correct URL from server variables
  * 
  * @return string The full site URL
  */
 function getSiteUrl(): string {
-    if (isLocalhost()) {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        return $protocol . '://' . $host . '/foodfusion';
+    // Detect protocol
+    $protocol = 'http';
+    if (
+        (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+        (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
+    ) {
+        $protocol = 'https';
     }
     
-    // Production URL
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'jameschinyamafoodfusion.ct.ws';
-    return $protocol . '://' . $host;
+    // Get host
+    $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+    
+    // Get base path
+    $basePath = rtrim(getBasePath(), '/');
+    
+    // Construct full URL
+    return $protocol . '://' . $host . $basePath;
 }
 
 /**
@@ -116,9 +142,14 @@ function urlWithParams(string $path, array $params = []): string {
     return $url;
 }
 
-// Define constants for easy access
-define('BASE_PATH', getBasePath());
-define('SITE_URL', getSiteUrl());
+// Define constants for easy access (only if not already defined)
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', getBasePath());
+}
+
+if (!defined('SITE_URL')) {
+    define('SITE_URL', getSiteUrl());
+}
 
 /**
  * Redirect to a URL within the application

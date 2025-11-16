@@ -7,26 +7,24 @@
 session_start();
 require_once 'google-config.php';
 require_once '../includes/db.php';
+require_once '../includes/paths.php';
 
 // Check for errors
 if (isset($_GET['error'])) {
     $_SESSION['error_message'] = 'Google authentication failed: ' . htmlspecialchars($_GET['error']);
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 // Verify state token for CSRF protection
 if (!isset($_GET['state']) || $_GET['state'] !== $_SESSION['google_oauth_state']) {
     $_SESSION['error_message'] = 'Invalid state parameter. Please try again.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 // Get authorization code
 if (!isset($_GET['code'])) {
     $_SESSION['error_message'] = 'Authorization code not received.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 $code = $_GET['code'];
@@ -52,16 +50,14 @@ curl_close($ch);
 
 if ($httpCode !== 200) {
     $_SESSION['error_message'] = 'Failed to obtain access token from Google.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 $tokenData = json_decode($response, true);
 
 if (!isset($tokenData['access_token'])) {
     $_SESSION['error_message'] = 'Access token not found in response.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 $accessToken = $tokenData['access_token'];
@@ -80,16 +76,14 @@ curl_close($ch);
 
 if ($httpCode !== 200) {
     $_SESSION['error_message'] = 'Failed to retrieve user information from Google.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 $userInfo = json_decode($userInfoResponse, true);
 
 if (!isset($userInfo['email'])) {
     $_SESSION['error_message'] = 'Email not provided by Google.';
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
 }
 
 // Extract user information
@@ -126,8 +120,7 @@ if ($result->num_rows > 0) {
     $_SESSION['success_message'] = 'Welcome back, ' . htmlspecialchars($user['first_name']) . '!';
     
     $stmt->close();
-    header('Location: /foodfusion/index.php');
-    exit();
+    redirect('index.php');
     
 } else {
     // New user - create account
@@ -152,14 +145,12 @@ if ($result->num_rows > 0) {
         $_SESSION['success_message'] = 'Welcome to FoodFusion, ' . htmlspecialchars($firstName) . '!';
         
         $insertStmt->close();
-        header('Location: /foodfusion/index.php');
-        exit();
+        redirect('index.php');
         
     } else {
         $_SESSION['error_message'] = 'Failed to create account. Please try again.';
         $insertStmt->close();
-        header('Location: /foodfusion/index.php');
-        exit();
+        redirect('index.php');
     }
 }
 
